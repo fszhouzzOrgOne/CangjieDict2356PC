@@ -2,9 +2,10 @@ package cjdict2356pc.tab;
 
 import java.awt.Color;
 import java.awt.GridLayout;
-import java.io.File;
-import java.net.URL;
+import java.awt.image.BufferedImage;
+import java.io.InputStream;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -26,7 +27,7 @@ public class CangjieDict2356Tab extends JPanel {
     private JTabbedPane jTabbedpane = new JTabbedPane();
     private String[] tabNames = { "倉頡字典", "版本說明" };
     // 圖標都用個没有背景的圖
-    ImageIcon icon = createImageIcon("images" + File.separator + "tabimg.png");
+    ImageIcon icon = createImageIcon("tabimg.png");
 
     public CangjieDict2356Tab() {
         layoutComponents();
@@ -46,11 +47,16 @@ public class CangjieDict2356Tab extends JPanel {
 
     /** 生成圖標 */
     private ImageIcon createImageIcon(String path) {
-        URL url = CangjieDict2356Tab.class.getResource(path);
-        if (url == null) {
-            System.out.println("the image " + path + " is not exist!");
+        BufferedImage image = null;
+        try {
+            InputStream proIs = this.getClass().getResourceAsStream("/tabimg.png");
+            image = ImageIO.read(proIs);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (image == null) {
             return null;
         }
-        return new ImageIcon(url);
+        return new ImageIcon(image);
     }
 }

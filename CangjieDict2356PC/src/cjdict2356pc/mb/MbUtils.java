@@ -1,6 +1,6 @@
 package cjdict2356pc.mb;
 
-import java.io.File;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -52,10 +52,10 @@ public class MbUtils {
 
         ArrayList<Item> itemsChar = selectDbByChar(typeCode, "頡");
         System.out.println("itemsChar: " + itemsChar);
-        
+
         ArrayList<Item> itemsCode = selectDbByCode(typeCode, "hh", false, null, false);
         System.out.println("itemsCode: " + itemsCode);
-        
+
         boolean existsDBLikeCode = existsDBLikeCode(typeCode, "hh");
         System.out.println("existsDBLikeCode: " + existsDBLikeCode);
     }
@@ -69,8 +69,8 @@ public class MbUtils {
      */
     public static Statement getStatement() {
         if (null == stmt) {
-            String mbdbFile = "src" + File.separator + "cjdict2356pc" + File.separator + "mb"
-                    + File.separator + dbName;
+            URL fileURL = MbUtils.class.getResource("/" + dbName);
+            String mbdbFile = fileURL.getFile();
             try {
                 Class.forName("org.sqlite.JDBC");
                 conct = DriverManager.getConnection("jdbc:sqlite:" + mbdbFile);

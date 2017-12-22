@@ -2,8 +2,8 @@ package cjdict2356pc.frame;
 
 import java.awt.Font;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 
 import javax.imageio.ImageIO;
@@ -43,7 +43,8 @@ public class CangjieDict2356Frame extends JFrame {
      * @author t
      */
     public static void initGlobalFontSetting() {
-        FontUIResource fontUIResource = new FontUIResource(new Font(CangjieDict2356PCMain.FONT_NAME_HEITI, Font.PLAIN, 16));
+        FontUIResource fontUIResource = new FontUIResource(
+                new Font(CangjieDict2356PCMain.FONT_NAME_HEITI, Font.PLAIN, 16));
         for (Enumeration<Object> keys = UIManager.getDefaults().keys(); keys.hasMoreElements();) {
             Object key = keys.nextElement();
             Object value = UIManager.get(key);
@@ -56,7 +57,7 @@ public class CangjieDict2356Frame extends JFrame {
     public CangjieDict2356Frame() {
         // 必須放在第一個
         initGlobalFontSetting();
-        
+
         setTitle("倉頡字典2356電腦版v1.0");
         setResizable(false);
 
@@ -69,9 +70,13 @@ public class CangjieDict2356Frame extends JFrame {
         // 自定義圖標
         BufferedImage image = null;
         try {
-            image = ImageIO.read(this.getClass().getResource("." + File.separator + "ic_launcher.png"));
+            InputStream proIs = this.getClass().getResourceAsStream("/ic_launcher.png");
+            image = ImageIO.read(proIs);
         } catch (IOException e) {
+            e.printStackTrace();
         }
-        this.setIconImage(image);
+        if (null != image) {
+            this.setIconImage(image);
+        }
     }
 }
