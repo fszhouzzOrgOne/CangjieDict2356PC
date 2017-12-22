@@ -78,6 +78,7 @@ public class MbUtils {
         if (null == stmt) {
             try {
                 // 參見：https://www.cnblogs.com/zeciiii/p/4178824.html
+                // 在內部會被拒絕訪問
                 String outFileName = MbUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath();
                 outFileName = java.net.URLDecoder.decode(outFileName, "UTF-8");
                 if (!outFileName.endsWith(File.separator)) {

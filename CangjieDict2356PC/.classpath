@@ -4,7 +4,6 @@
 	<classpathentry kind="src" path="img"/>
 	<classpathentry kind="src" path="mbdb"/>
 	<classpathentry kind="src" path="version"/>
-	<classpathentry kind="src" path="lib"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="lib" path="lib/sqlite-jdbc-3.15.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
