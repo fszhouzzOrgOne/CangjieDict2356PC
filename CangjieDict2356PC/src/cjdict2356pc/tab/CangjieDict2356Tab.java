@@ -40,9 +40,9 @@ public class CangjieDict2356Tab extends JPanel {
 
         JPanel jpanelSecond = new CangjieDict2356TabLogPanel();
         jTabbedpane.addTab(tabNames[1], icon, jpanelSecond, tabNames[1]);
+        
         setLayout(new GridLayout(1, 1));
         add(jTabbedpane);
-
     }
 
     /** 生成圖標 */

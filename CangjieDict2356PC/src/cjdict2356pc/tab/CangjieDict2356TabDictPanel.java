@@ -151,6 +151,9 @@ public class CangjieDict2356TabDictPanel extends JPanel {
                 openGroupCodes.add(g.getgCode());
             }
         }
+        if (openGroupCodes.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "沒有查詢到任何數據。");
+        }
 
         updateResListPanel();
     }

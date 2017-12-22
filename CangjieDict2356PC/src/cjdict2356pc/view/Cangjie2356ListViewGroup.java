@@ -35,9 +35,9 @@ public class Cangjie2356ListViewGroup extends Cangjie2356ListView {
         int width = 423;
         int height = 50;
         setSize(width, height);
-        Border border = BorderFactory.createLineBorder(Color.black);
+        Border border = BorderFactory.createLineBorder(Color.gray);
         this.setBorder(border);
-        this.setBackground(Color.DARK_GRAY);
+        this.setBackground(Color.darkGray);
 
         labelGroupName = new JLabel(" " + group.getgName(), null, SwingConstants.LEFT);
         Font font = new Font(CangjieDict2356PCMain.FONT_NAME_HEITI, Font.BOLD, 30);
@@ -51,7 +51,7 @@ public class Cangjie2356ListViewGroup extends Cangjie2356ListView {
         labelGroupName.setBounds(groupX, groupY, groupWidth, groupHeight);
         add(labelGroupName);
     }
-    
+
     public Group getGroupData() {
         return group;
     }
