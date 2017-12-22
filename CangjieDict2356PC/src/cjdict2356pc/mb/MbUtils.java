@@ -1,6 +1,10 @@
 package cjdict2356pc.mb;
 
-import java.net.URL;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -9,6 +13,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import cjdict2356pc.dto.Item;
+import cjdict2356pc.utils.IOUtils;
 
 /**
  * 加载碼表數據
@@ -69,11 +74,33 @@ public class MbUtils {
      */
     public static Statement getStatement() {
         if (null == stmt) {
-            URL fileURL = MbUtils.class.getResource("/" + dbName);
-            String mbdbFile = fileURL.getFile();
             try {
+                String outFileName = MbUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath()
+                        + dbName;
+                String inFileName = "." + File.separator + dbName;
+
+                File destFile = new File(outFileName);
+                boolean shouldCopy = true;
+                if (destFile.exists()) {
+                    InputStream isOut = new FileInputStream(destFile);
+                    InputStream isInner = MbUtils.class.getResourceAsStream(inFileName);
+
+                    if (IOUtils.isSameFile(isInner, isOut)) {
+                        shouldCopy = false;
+                    }
+                    if (shouldCopy) {
+                        destFile.delete();
+                    }
+                }
+
+                if (shouldCopy) {
+                    OutputStream isOut = new FileOutputStream(destFile);
+                    InputStream isInner = MbUtils.class.getResourceAsStream(inFileName);
+                    IOUtils.copyFile(isInner, isOut);
+                }
+
                 Class.forName("org.sqlite.JDBC");
-                conct = DriverManager.getConnection("jdbc:sqlite:" + mbdbFile);
+                conct = DriverManager.getConnection("jdbc:sqlite:" + outFileName);
                 stmt = conct.createStatement();
             } catch (Exception e) {
                 e.printStackTrace();
