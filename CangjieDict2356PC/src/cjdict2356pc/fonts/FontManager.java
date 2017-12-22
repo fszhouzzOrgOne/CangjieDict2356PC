@@ -22,7 +22,7 @@ public class FontManager {
             InputStream is = null;
             BufferedInputStream bis = null;
             try {
-                is = FontManager.class.getResourceAsStream("font" + File.separator + FONT_NAME);
+                is = FontManager.class.getResourceAsStream("." + File.separator + FONT_NAME);
                 bis = new BufferedInputStream(is);
                 // createFont返回一个使用指定字体类型和输入数据的新 Font。<br>
                 // 新 Font磅值为 1，样式为 PLAIN,注意 此方法不会关闭 InputStream

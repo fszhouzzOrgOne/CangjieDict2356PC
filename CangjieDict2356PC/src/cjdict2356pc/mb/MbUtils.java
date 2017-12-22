@@ -12,6 +12,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import cjdict2356pc.dto.Item;
 import cjdict2356pc.utils.IOUtils;
 
@@ -75,9 +77,17 @@ public class MbUtils {
     public static Statement getStatement() {
         if (null == stmt) {
             try {
-                String outFileName = MbUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath()
-                        + dbName;
-                String inFileName = "." + File.separator + dbName;
+                // 參見：https://www.cnblogs.com/zeciiii/p/4178824.html
+                String outFileName = MbUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+                outFileName = java.net.URLDecoder.decode(outFileName, "UTF-8");
+                if (!outFileName.endsWith(File.separator)) {
+                    outFileName = outFileName.substring(0, outFileName.lastIndexOf(File.separator) + 1);
+                }
+                outFileName += dbName;
+                
+                String inFileName = "/" + dbName;
+                
+                JOptionPane.showMessageDialog(null, inFileName);
 
                 File destFile = new File(outFileName);
                 boolean shouldCopy = true;
@@ -94,7 +104,7 @@ public class MbUtils {
                 }
 
                 if (shouldCopy) {
-                    OutputStream isOut = new FileOutputStream(destFile);
+                    OutputStream isOut = new FileOutputStream(outFileName);
                     InputStream isInner = MbUtils.class.getResourceAsStream(inFileName);
                     IOUtils.copyFile(isInner, isOut);
                 }
@@ -103,7 +113,10 @@ public class MbUtils {
                 conct = DriverManager.getConnection("jdbc:sqlite:" + outFileName);
                 stmt = conct.createStatement();
             } catch (Exception e) {
-                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, e.getMessage());
+                if (null != e.getCause()) {
+                    JOptionPane.showMessageDialog(null, e.getCause().getMessage());
+                }
             }
         }
         return stmt;
