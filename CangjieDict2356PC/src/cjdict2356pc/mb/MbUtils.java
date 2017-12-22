@@ -88,8 +88,6 @@ public class MbUtils {
                 
                 String inFileName = "/" + dbName;
                 
-                JOptionPane.showMessageDialog(null, inFileName);
-
                 File destFile = new File(outFileName);
                 boolean shouldCopy = true;
                 if (destFile.exists()) {

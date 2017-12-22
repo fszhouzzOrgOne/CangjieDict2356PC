@@ -1,0 +1,2 @@
+導出 RunnableJar
+選 package required lib... to Jar
