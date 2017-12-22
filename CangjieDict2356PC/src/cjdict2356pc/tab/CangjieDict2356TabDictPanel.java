@@ -54,6 +54,7 @@ public class CangjieDict2356TabDictPanel extends JPanel {
      */
     private JScrollPane resListPanel = null;
 
+    private boolean lostVirginity = false;
     /**
      * 所有的分組和查詢結果
      */
@@ -151,7 +152,7 @@ public class CangjieDict2356TabDictPanel extends JPanel {
                 openGroupCodes.add(g.getgCode());
             }
         }
-        if (openGroupCodes.isEmpty()) {
+        if (lostVirginity && openGroupCodes.isEmpty()) {
             JOptionPane.showMessageDialog(null, "沒有查詢到任何數據。");
         }
 
@@ -165,6 +166,8 @@ public class CangjieDict2356TabDictPanel extends JPanel {
      * @time 2017年12月21日 下午11:41:39
      */
     public void updateResListPanel() {
+        lostVirginity = true;
+        
         if (null == resListPanel) {
             return;
         }
