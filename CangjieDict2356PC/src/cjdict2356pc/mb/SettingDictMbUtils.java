@@ -16,6 +16,9 @@ import cjdict2356pc.state.trans.InputMethodStatusCnCj5;
 import cjdict2356pc.state.trans.InputMethodStatusCnCj6;
 import cjdict2356pc.state.trans.InputMethodStatusCnCjMs;
 import cjdict2356pc.state.trans.InputMethodStatusCnCjYhqm;
+import cjdict2356pc.state.trans.InputMethodStatusCnElseJyutp;
+import cjdict2356pc.state.trans.InputMethodStatusCnElseKorea;
+import cjdict2356pc.state.trans.InputMethodStatusCnElsePy;
 import cjdict2356pc.state.trans.InputMethodStatusCnElseSghm;
 import cjdict2356pc.utils.StringUtils;
 
@@ -65,6 +68,12 @@ public class SettingDictMbUtils {
                 im = new InputMethodStatusCnCj2();
                 allCjIMsMap.put(im.getSubType(), im);
                 im = new InputMethodStatusCnElseSghm();
+                allCjIMsMap.put(im.getSubType(), im);
+                im = new InputMethodStatusCnElsePy();
+                allCjIMsMap.put(im.getSubType(), im);
+                im = new InputMethodStatusCnElseJyutp();
+                allCjIMsMap.put(im.getSubType(), im);
+                im = new InputMethodStatusCnElseKorea();
                 allCjIMsMap.put(im.getSubType(), im);
 
                 for (String key : allCjIMsMap.keySet()) {

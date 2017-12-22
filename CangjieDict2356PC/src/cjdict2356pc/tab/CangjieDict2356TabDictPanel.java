@@ -198,6 +198,7 @@ public class CangjieDict2356TabDictPanel extends JPanel {
 
         resListPanel.setViewportView(list);
         resListPanel.repaint();
+        resListPanel.requestFocus();
 
         if (null != continueSearchFrame) {
             continueSearchFrame.dispose();
