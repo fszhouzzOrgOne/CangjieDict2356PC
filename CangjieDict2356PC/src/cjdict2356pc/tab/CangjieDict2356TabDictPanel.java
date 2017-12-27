@@ -2,6 +2,10 @@ package cjdict2356pc.tab;
 
 import java.awt.Font;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -167,7 +171,7 @@ public class CangjieDict2356TabDictPanel extends JPanel {
      */
     public void updateResListPanel() {
         lostVirginity = true;
-        
+
         if (null == resListPanel) {
             return;
         }
@@ -319,7 +323,7 @@ public class CangjieDict2356TabDictPanel extends JPanel {
 
                     continueSearchFrame = new JFrame("繼續查詢？");
                     continueSearchFrame.setBounds(new Rectangle((int) vi.getBounds().getX() + 50,
-                            (int) vi.getBounds().getY() + 50, 200, 160));
+                            (int) vi.getBounds().getY() + 50, 250, 300));
                     continueSearchFrame.setLocationRelativeTo(null);
                     continueSearchFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                     continueSearchFrame.setLayout(null);
@@ -329,7 +333,7 @@ public class CangjieDict2356TabDictPanel extends JPanel {
                     JLabel jl = new JLabel("繼續查詢：", null, SwingConstants.LEFT);
                     int jlX = 5;
                     int jlY = 0;
-                    int jlwidth = 185;
+                    int jlwidth = 235;
                     int jlheight = 30;
                     jl.setBounds(jlX, jlY, jlwidth, jlheight);
                     continueSearchFrame.getContentPane().add(jl);
@@ -337,7 +341,7 @@ public class CangjieDict2356TabDictPanel extends JPanel {
                     Font font20 = new Font(null, Font.BOLD, 18);
                     BevelBorder raisedBevelBorder = (BevelBorder) BorderFactory.createRaisedBevelBorder();
 
-                    JLabel charLabel = new JLabel("查詢文字“" + it.getCharacter() + "”", null, SwingConstants.CENTER);
+                    JLabel charLabel = new JLabel("查詢文字“" + it.getCharacter() + "”", null, SwingConstants.LEFT);
                     charLabel.setFont(font20);
                     charLabel.setBorder(raisedBevelBorder);
                     int charX = 5;
@@ -348,7 +352,7 @@ public class CangjieDict2356TabDictPanel extends JPanel {
                     charLabel.addMouseListener(new ContinueSearchMouseListener());
                     continueSearchFrame.getContentPane().add(charLabel);
 
-                    JLabel codeLabel = new JLabel("查詢編碼“" + it.getEncode() + "”", null, SwingConstants.CENTER);
+                    JLabel codeLabel = new JLabel("查詢編碼“" + it.getEncode() + "”", null, SwingConstants.LEFT);
                     codeLabel.setFont(font20);
                     codeLabel.setBorder(raisedBevelBorder);
                     int codeX = 5;
@@ -358,6 +362,40 @@ public class CangjieDict2356TabDictPanel extends JPanel {
                     codeLabel.setBounds(codeX, codeY, codeWidth, codeHeight);
                     codeLabel.addMouseListener(new ContinueSearchMouseListener());
                     continueSearchFrame.getContentPane().add(codeLabel);
+
+                    JLabel copyChaLabel = new JLabel("複製文字“" + it.getCharacter() + "”", null, SwingConstants.LEFT);
+                    copyChaLabel.setFont(font20);
+                    copyChaLabel.setBorder(raisedBevelBorder);
+                    int cochaX = 5;
+                    int cochaY = codeY + codeHeight + 5;
+                    int cochaWidth = jlwidth;
+                    int cochaHeight = charHeight;
+                    copyChaLabel.setBounds(cochaX, cochaY, cochaWidth, cochaHeight);
+                    copyChaLabel.addMouseListener(new ContinueSearchMouseListener());
+                    continueSearchFrame.getContentPane().add(copyChaLabel);
+
+                    JLabel copyCodLabel = new JLabel("複製編碼“" + it.getEncode() + "”", null, SwingConstants.LEFT);
+                    copyCodLabel.setFont(font20);
+                    copyCodLabel.setBorder(raisedBevelBorder);
+                    int cocodX = 5;
+                    int cocodY = cochaY + cochaHeight + 5;
+                    int cocodWidth = jlwidth;
+                    int cocodHeight = charHeight;
+                    copyCodLabel.setBounds(cocodX, cocodY, cocodWidth, cocodHeight);
+                    copyCodLabel.addMouseListener(new ContinueSearchMouseListener());
+                    continueSearchFrame.getContentPane().add(copyCodLabel);
+
+                    JLabel copyChaCodLabel = new JLabel("複製文字和編碼“" + it.getCharacter() + " " + it.getEncode() + "”",
+                            null, SwingConstants.LEFT);
+                    copyChaCodLabel.setFont(font20);
+                    copyChaCodLabel.setBorder(raisedBevelBorder);
+                    int cochacodX = 5;
+                    int cochacodY = cocodY + cocodHeight + 5;
+                    int cochacodWidth = jlwidth;
+                    int cochacodHeight = charHeight;
+                    copyChaCodLabel.setBounds(cochacodX, cochacodY, cochacodWidth, cochacodHeight);
+                    copyChaCodLabel.addMouseListener(new ContinueSearchMouseListener());
+                    continueSearchFrame.getContentPane().add(copyChaCodLabel);
 
                     continueSearchFrame.setVisible(true);
                 }
@@ -412,14 +450,38 @@ public class CangjieDict2356TabDictPanel extends JPanel {
                 continueSearchFrame.repaint();
 
                 String textInput = la.getText();
-                textInput = textInput.replaceAll("[“”]|(查詢文字)|(查詢編碼)", "");
                 if (null != textInput) {
-                    if (null != searchField) {
-                        searchField.setText(textInput);
-                        searchButton.doClick();
+                    if (textInput.startsWith("查詢")) {
+                        textInput = textInput.replaceAll("[“”]|(查詢)|(文字)|(編碼)", "");
+                        if (textInput.length() > 0) {
+                            if (null != searchField) {
+                                searchField.setText(textInput);
+                                searchButton.doClick();
+                            }
+                        }
+                    } else if (textInput.startsWith("複製")) {
+                        textInput = textInput.replaceAll("[“”]|(複製)|(文字)|(和)|(編碼)", "");
+                        if (textInput.length() > 0) {
+                            setSysClipboardText(textInput);
+                        }
                     }
                 }
+
+                if (null != continueSearchFrame) {
+                    continueSearchFrame.dispose();
+                    continueSearchFrame = null;
+                }
             }
+        }
+
+        /**
+         * 将字符串复制到剪切板。 <br/>
+         * 參見：http://blog.csdn.net/aminfo/article/details/7858109
+         */
+        public void setSysClipboardText(String writeMe) {
+            Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+            Transferable tText = new StringSelection(writeMe);
+            clip.setContents(tText, null);
         }
 
         @Override
