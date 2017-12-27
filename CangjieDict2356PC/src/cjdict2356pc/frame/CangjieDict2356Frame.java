@@ -58,7 +58,7 @@ public class CangjieDict2356Frame extends JFrame {
         // 必須放在第一個
         initGlobalFontSetting();
 
-        setTitle("倉頡字典2356電腦版v1.0");
+        setTitle("倉頡字典2356電腦版");
         setResizable(false);
 
         int contentWidth = 450;
