@@ -33,7 +33,9 @@ public class IOUtils {
                     String line = str.trim(); // 去首尾
                     line = line.replaceAll("( )\\1+", "$1"); // 中间一个空
                     line = line.replaceAll(blankPatn, ""); // 去空白字符
-                    result.add(line);
+                    if (!line.startsWith("#")) {
+                        result.add(line);
+                    }
                 }
             }
         } catch (Exception e) {
