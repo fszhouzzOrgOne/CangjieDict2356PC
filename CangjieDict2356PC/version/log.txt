@@ -8,7 +8,7 @@
 ------------
 碼表來源說明:
 倉頡二代，取自倉頡平臺2012所帶碼表。
-倉頡三代，引用GitHub上的 Arthurmcarthur/Cangjie3-Plus 碼表。依Arthurmcarthur建議，官方一直把z當片語，z鍵中文字母改爲片字。
+倉頡三代，引用GitHub上的 Arthurmcarthur/Cangjie3-Plus 碼表。官方一直把z當片語，依Arthurmcarthur建議，z鍵中文字母改爲片字。
 倉頡五代，引用 Jackchows/Cangjie5 碼表，99碼表上參考03五代製成。
 雅虎奇摩、微軟倉頡：兩個是伊卂Ejsoon推薦的碼表。
 蒼頡六代，取用倉頡輸入法羣共享中的cj6-70000碼表等，並整合了雪齋團隊整理的碼表。另外康熙部首、部首擴展、兼容漢字及擴展、漢字筆劃、漢字結構、注音符號及擴展、日韓文符號等，我自己編的碼，也上傳在Github的fszhouzzOrgOne/Cangjie6Coding项目，歡迎大家查錯、發我改正。感謝 Arthurmcarthur 幫忙找錯。
