@@ -11,6 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -35,6 +37,8 @@ public class MbUtils {
     public static final String TYPE_CODE_CJGENMS = "cjms"; // 微軟倉頡
     public static final String TYPE_CODE_CJGENKOREA = "korea"; // 朝鮮諺文
     public static final String TYPE_CODE_CJGENMANJU = "manju"; // 圈點滿文
+    public static final String TYPE_CODE_CJGEN_IPA = "ipa"; // 國際音標
+    public static final String TYPE_CODE_CJGEN_KOXHANH = "kohan"; // 中古漢語
     // 倉頡碼表的交集
     public static final String TYPE_CODE_CJINTERSECT = "cjcommon";
 
@@ -49,6 +53,15 @@ public class MbUtils {
     private static String mbClNameCod = "mb_code";
     private static String mbClNameVal = "mb_char";
     private static String mbClNameOrder = "mb_order_no"; // 序號列
+    private static String mbTbNameIntersect = "t_mb_content_intersect"; // 交集碼表
+    private static String mbClNameIdIntersect = "_id";
+    private static String mbClNameCodIntersect = "mb_code";
+    private static String mbClNameValIntersect = "mb_char";
+    private static String mbClNameOrderIntersect6 = "mb_order_6"; // 序號列6
+    private static String mbClNameOrderIntersect5 = "mb_order_5"; // 序號列5
+    private static String mbClNameOrderIntersect3 = "mb_order_3"; // 序號列3
+    private static String mbClNameOrderIntersectyh = "mb_order_yh"; // 序號列yh
+    private static String mbClNameOrderIntersectms = "mb_order_ms"; // 序號列ms
 
     private static Connection conct = null;
     private static Statement stmt = null;
@@ -85,9 +98,9 @@ public class MbUtils {
                     outFileName = outFileName.substring(0, outFileName.lastIndexOf(File.separator) + 1);
                 }
                 outFileName += dbName;
-                
+
                 String inFileName = "/" + dbName;
-                
+
                 File destFile = new File(outFileName);
                 boolean shouldCopy = true;
                 if (destFile.exists()) {
@@ -151,30 +164,7 @@ public class MbUtils {
         }
         cha = cha.trim();
 
-        // 輸入法類型條件
-        String typeCodeSql = " and " + mbClNameGen + " in ( ";
-        for (int i = 0; i < typeCode.length; i++) {
-            typeCodeSql += " '" + typeCode[i] + "'";
-            if (i < typeCode.length - 1) {
-                typeCodeSql += ", ";
-            }
-        }
-        typeCodeSql += " ) ";
-        // 當前輸入條件
-        String chaSql = " and " + mbClNameVal + " = '" + cha + "' ";
-
-        StringBuilder sql = new StringBuilder();
-        sql.append(" select ");
-        sql.append(mbClNameId + ", ");
-        sql.append(mbClNameGen + ", ");
-        sql.append(mbClNameCod + ", ");
-        sql.append(mbClNameVal + ", ");
-        sql.append(mbClNameOrder);
-        sql.append(" from ");
-        sql.append(mbTbName);
-        sql.append(" where 1=1 ");
-        sql.append(typeCodeSql);
-        sql.append(chaSql);
+        String sql = getQuerySql(typeCode, cha, null);
 
         ResultSet rs = null;
         try {
@@ -216,49 +206,35 @@ public class MbUtils {
         }
         code = code.trim();
 
-        // 輸入法類型條件
-        String typeCodeSql = " and " + mbClNameGen + " in ( ";
-        for (int i = 0; i < typeCode.length; i++) {
-            typeCodeSql += " '" + typeCode[i] + "'";
-            if (i < typeCode.length - 1) {
-                typeCodeSql += ", ";
-            }
-        }
-        typeCodeSql += " ) ";
-        // 當前輸入條件
-        String codeSql = " and " + mbClNameCod + " = '" + code + "' ";
-        // 排序
-        String orderSql = " order by " + mbClNameCod + " asc, " + mbClNameOrder + " desc ";
-
-        StringBuilder sql = new StringBuilder();
-        sql.append(" select ");
-        sql.append(mbClNameId + ", ");
-        sql.append(mbClNameGen + ", ");
-        sql.append(mbClNameCod + ", ");
-        sql.append(mbClNameVal + ", ");
-        sql.append(mbClNameOrder);
-        sql.append(" from ");
-        sql.append(mbTbName);
-        sql.append(" where 1=1 ");
-        sql.append(typeCodeSql);
-        sql.append(codeSql);
-        sql.append(orderSql);
+        String sqls = getQuerySql(typeCode, null, code);
 
         ResultSet rs = null;
         try {
-            rs = getStatement().executeQuery(sql.toString());
+            rs = getStatement().executeQuery(sqls.toString());
         } catch (SQLException e) {
             e.printStackTrace();
         }
         ArrayList<Item> items = handleSelectResultCursor(rs);
 
         // 如果沒有找到，按模糊查詢，再來一次
+        // 倉頡不模糊查詢，先不管交集表了
         if (isPrompt && (null == items || items.isEmpty())) {
+            // 輸入法類型條件
+            List<String> types = new ArrayList<String>(Arrays.asList(typeCode));
+            for (int i = types.size() - 1; i >= 0; i--) {
+                if (TYPE_CODE_CJINTERSECT.equals(types.get(i))) {
+                    types.remove(i);
+                }
+            }
+            String typeCodeSql = " and " + mbClNameGen + " = '" + types.get(0) + "' ";
+            // 排序
+            String orderSql = " order by " + mbClNameCod + " asc, " + mbClNameOrder + " desc ";
+
             String promptCodeSql = " and " + mbClNameCod + " like '";
             promptCodeSql += (promptCode == null) ? code + "%" : promptCode + "%";
             promptCodeSql += "' ";
 
-            sql = new StringBuilder();
+            StringBuilder sql = new StringBuilder();
             sql.append(" select ");
             sql.append(mbClNameId + ", ");
             sql.append(mbClNameGen + ", ");
@@ -323,14 +299,15 @@ public class MbUtils {
     // 2
     public static boolean existsDBLikeCode(String[] typeCode, String code) {
         // 輸入法類型條件
-        String typeCodeSql = " and " + mbClNameGen + " in ( ";
-        for (int i = 0; i < typeCode.length; i++) {
-            typeCodeSql += " '" + typeCode[i] + "'";
-            if (i < typeCode.length - 1) {
-                typeCodeSql += ", ";
+        List<String> types = new ArrayList<String>(Arrays.asList(typeCode));
+        boolean unionIntersect = false;
+        for (int i = types.size() - 1; i >= 0; i--) {
+            if (TYPE_CODE_CJINTERSECT.equals(types.get(i))) {
+                unionIntersect = true;
+                types.remove(i);
             }
         }
-        typeCodeSql += " ) ";
+        String typeCodeSql = " and " + mbClNameGen + " = '" + types.get(0) + "' ";
         // 當前輸入條件
         String codeLikeSql = " and " + mbClNameCod + " like '" + code + "%' ";
 
@@ -342,6 +319,13 @@ public class MbUtils {
         sql.append("     where 1=1 ");
         sql.append(typeCodeSql);
         sql.append(codeLikeSql);
+        if (unionIntersect) {
+            sql.append(" union all select 1 ");
+            sql.append("     from ");
+            sql.append(mbTbNameIntersect);
+            sql.append("     where 1=1 ");
+            sql.append(codeLikeSql);
+        }
         sql.append(" ) ");
 
         boolean res = false;
@@ -383,6 +367,86 @@ public class MbUtils {
             e.printStackTrace();
         }
         return resultName;
+    }
+
+    /**
+     * 得到查询語句字串
+     * 
+     * @author fszhouzz@qq.com
+     * @time 2018年10月8日 下午10:58:18
+     * @param typeArr
+     * @param cha
+     * @param code
+     * @return
+     */
+    private static String getQuerySql(String[] typeArr, String cha, String code) {
+        // 輸入法類型條件
+        List<String> types = new ArrayList<String>(Arrays.asList(typeArr));
+        boolean unionIntersect = false;
+        for (int i = types.size() - 1; i >= 0; i--) {
+            if (TYPE_CODE_CJINTERSECT.equals(types.get(i))) {
+                unionIntersect = true;
+                types.remove(i);
+            }
+        }
+
+        String typeCodeSql = " and " + mbClNameGen + " = '" + types.get(0) + "' ";
+        // 當前輸入條件
+        String chaSql = "";
+        if (null != cha && !"".equals(cha.trim())) {
+            chaSql = " and " + mbClNameVal + " = '" + cha + "' ";
+        }
+        String codeSql = "";
+        if (null != code && !"".equals(code.trim())) {
+            codeSql = " and " + mbClNameCod + " = '" + code + "' ";
+        }
+        // 排序
+        String orderSql = " order by " + mbClNameCod + " asc, " + mbClNameOrder + " desc ";
+
+        StringBuilder sql = new StringBuilder();
+        sql.append(" select ");
+        sql.append(mbClNameId + ", ");
+        sql.append(mbClNameGen + ", ");
+        sql.append(mbClNameCod + ", ");
+        sql.append(mbClNameVal + ", ");
+        sql.append(mbClNameOrder);
+        sql.append(" from ");
+        sql.append(mbTbName);
+        sql.append(" where 1=1 ");
+        sql.append(typeCodeSql);
+        sql.append(chaSql);
+        sql.append(codeSql);
+        if (unionIntersect) {
+            sql.append(" union all select ");
+            sql.append(mbClNameIdIntersect + ", ");
+            sql.append("'" + TYPE_CODE_CJINTERSECT + "' as " + mbClNameGen + ", ");
+            sql.append(mbClNameCodIntersect + ", ");
+            sql.append(mbClNameValIntersect + ", ");
+            String colName = getColOrderName(types.get(0));
+            sql.append(colName + " " + mbClNameOrder);
+            sql.append(" from ");
+            sql.append(mbTbNameIntersect);
+            sql.append(" where 1=1 ");
+            sql.append(chaSql);
+            sql.append(codeSql);
+        }
+        return "select * from (" + sql.toString() + ") t " + orderSql;
+    }
+
+    private static String getColOrderName(String typeName) {
+        String colName = mbClNameOrder;
+        if (TYPE_CODE_CJGEN6.equals(typeName)) {
+            colName = mbClNameOrderIntersect6;
+        } else if (TYPE_CODE_CJGEN5.equals(typeName)) {
+            colName = mbClNameOrderIntersect5;
+        } else if (TYPE_CODE_CJGEN3.equals(typeName)) {
+            colName = mbClNameOrderIntersect3;
+        } else if (TYPE_CODE_CJGENYAHOO.equals(typeName)) {
+            colName = mbClNameOrderIntersectyh;
+        } else if (TYPE_CODE_CJGENMS.equals(typeName)) {
+            colName = mbClNameOrderIntersectms;
+        }
+        return colName;
     }
 
 }
