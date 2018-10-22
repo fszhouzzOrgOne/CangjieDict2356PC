@@ -31,6 +31,8 @@ import javax.swing.border.EmptyBorder;
 import cjdict2356pc.dto.Group;
 import cjdict2356pc.dto.Item;
 import cjdict2356pc.mb.SettingDictMbUtils;
+import cjdict2356pc.state.trans.InputMethodStatusCnElseUnicode;
+import cjdict2356pc.utils.UnicodeConvertUtil;
 import cjdict2356pc.view.Cangjie2356ListItemList;
 import cjdict2356pc.view.Cangjie2356ListView;
 import cjdict2356pc.view.Cangjie2356ListViewGroup;
@@ -148,6 +150,7 @@ public class CangjieDict2356TabDictPanel extends JPanel {
             gDataPar = SettingDictMbUtils.initGroupDatas();
         }
         gData = gDataPar;
+        tryInitUnicodeGroup(gData);
 
         openGroupCodes.clear();
         // 默認展開有結果的分組
@@ -161,6 +164,38 @@ public class CangjieDict2356TabDictPanel extends JPanel {
         }
 
         updateResListPanel();
+    }
+
+    /**
+     * 構造一個統一碼分組
+     * 
+     * @author fszhouzz@qq.com
+     * @time 2018年10月20日 上午11:40:29
+     * @param groups
+     *            肯定不爲Null
+     */
+    private void tryInitUnicodeGroup(List<Group> groups) {
+        Group gu = Group.unicodeGroup.clone();
+        if (null != searchField) {
+            String query = searchField.getText();
+            if (query.length() > 0) {
+                // 先按編碼
+                List<Item> items = new ArrayList<Item>();
+                InputMethodStatusCnElseUnicode uniIm = new InputMethodStatusCnElseUnicode();
+                List<Item> byCodes = uniIm.getCandidatesInfoByTrueCode(query, false);
+                if (null != byCodes && !byCodes.isEmpty()) {
+                    items.addAll(byCodes);
+                }
+                List<Item> byChas = uniIm.getCandidatesInfoByChar(query);
+                if (null != byChas && !byChas.isEmpty()) {
+                    items.addAll(byChas);
+                }
+                if (!items.isEmpty()) {
+                    gu.setItems(items);
+                }
+            } // end query.length()
+        } // end editText
+        groups.add(gu);
     }
 
     /**
@@ -225,9 +260,7 @@ public class CangjieDict2356TabDictPanel extends JPanel {
                 List<Group> gData = null;
                 String textInput = searchField.getText();
                 if (null != textInput && !"".equals(textInput.trim().replaceAll(" ", ""))) {
-                    textInput = textInput.trim().replaceAll("[ ='\"\\|!,./\\\\;?*=-_+%\\^\\$\\#\\}\\{\\]\\[\\)\\(]", "")
-                            .toLowerCase();
-                    searchField.setText(textInput);
+                    textInput = textInput.trim().toLowerCase();
                     String pattern = "[a-zA-Z]{1,}";
                     if (textInput.matches(pattern)) {
                         gData = SettingDictMbUtils.selectDbByCode(textInput);
@@ -320,10 +353,16 @@ public class CangjieDict2356TabDictPanel extends JPanel {
                         continueSearchFrame.dispose();
                         continueSearchFrame = null;
                     }
+                    Rectangle commonRect = new Rectangle((int) vi.getBounds().getX() + 50,
+                            (int) vi.getBounds().getY() + 50, 250, 340);
+                    Rectangle unicodeRect = new Rectangle((int) vi.getBounds().getX() + 50,
+                            (int) vi.getBounds().getY() + 50, 250, 300);
 
                     continueSearchFrame = new JFrame("繼續查詢？");
-                    continueSearchFrame.setBounds(new Rectangle((int) vi.getBounds().getX() + 50,
-                            (int) vi.getBounds().getY() + 50, 250, 300));
+                    continueSearchFrame.setBounds(commonRect);
+                    if (it.isUnicodeItem()) {
+                        continueSearchFrame.setBounds(unicodeRect);
+                    }
                     continueSearchFrame.setLocationRelativeTo(null);
                     continueSearchFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                     continueSearchFrame.setLayout(null);
@@ -397,6 +436,22 @@ public class CangjieDict2356TabDictPanel extends JPanel {
                     copyChaCodLabel.addMouseListener(new ContinueSearchMouseListener());
                     continueSearchFrame.getContentPane().add(copyChaCodLabel);
 
+                    // 統一碼
+                    List<String> strUnics = UnicodeConvertUtil.getUnicodeStr4ListFromStr(it.getCharacter());
+                    final String unicode = (null == strUnics || strUnics.isEmpty()) ? null : strUnics.get(0);
+                    if (!it.isUnicodeItem() && null != unicode) {
+                        JLabel copyUnicodeLabel = new JLabel("複製統一碼“" + unicode + "”", null, SwingConstants.LEFT);
+                        copyUnicodeLabel.setFont(font20);
+                        copyUnicodeLabel.setBorder(raisedBevelBorder);
+                        int coUnicodeX = 5;
+                        int coUnicodeY = cochacodY + cochacodHeight + 5;
+                        int coUnicodeWidth = jlwidth;
+                        int coUnicodeHeight = charHeight;
+                        copyUnicodeLabel.setBounds(coUnicodeX, coUnicodeY, coUnicodeWidth, coUnicodeHeight);
+                        copyUnicodeLabel.addMouseListener(new ContinueSearchMouseListener());
+                        continueSearchFrame.getContentPane().add(copyUnicodeLabel);
+                    }
+
                     continueSearchFrame.setVisible(true);
                 }
             }
@@ -460,7 +515,7 @@ public class CangjieDict2356TabDictPanel extends JPanel {
                             }
                         }
                     } else if (textInput.startsWith("複製")) {
-                        textInput = textInput.replaceAll("[“”]|(複製)|(文字)|(和)|(編碼)", "");
+                        textInput = textInput.replaceAll("[“”]|(複製)|(文字)|(和)|(編碼)|(統一碼)", "");
                         if (textInput.length() > 0) {
                             setSysClipboardText(textInput);
                         }

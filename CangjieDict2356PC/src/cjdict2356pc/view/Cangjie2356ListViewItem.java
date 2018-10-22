@@ -1,6 +1,7 @@
 package cjdict2356pc.view;
 
 import java.awt.Font;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -9,6 +10,7 @@ import javax.swing.border.Border;
 
 import cjdict2356pc.CangjieDict2356PCMain;
 import cjdict2356pc.dto.Item;
+import cjdict2356pc.utils.UnicodeConvertUtil;
 import cjdict2356pc.utils.UnicodeHanziUtil;
 
 /**
@@ -40,18 +42,27 @@ public class Cangjie2356ListViewItem extends Cangjie2356ListView {
         this.setBorder(border);
 
         String charLabelText = item.getCharacter();
-        String encodeLabelText = item.getEncode() + "（" + item.getEncodeName() + "）";
+        String encodeLabelText = item.getEncode();
+        if (!item.isUnicodeItem()) {
+            encodeLabelText += "（" + item.getEncodeName() + "）";
+        }
         String unicodeRangeName = "";
         if (item.isEmpty()) {
             charLabelText = "(空)";
             encodeLabelText = "無結果。";
         } else {
             unicodeRangeName = UnicodeHanziUtil.getRangeNameByChar(item.getCharacter());
+            if (!item.isUnicodeItem()) {
+                List<String> codes = UnicodeConvertUtil.getUnicodeStr4ListFromStr(item.getCharacter());
+                if (null != codes && codes.size() == 1) {
+                    unicodeRangeName += "(" + codes.get(0) + ")";
+                }
+            }
         }
 
         Font font30 = new Font(null, Font.BOLD, 32);
         Font font20 = new Font(CangjieDict2356PCMain.FONT_NAME_HEITI, Font.BOLD, 18);
-        
+
         labelChar = new JLabel(charLabelText, null, SwingConstants.CENTER);
         labelChar.setFont(font30);
         int charX = 0;
@@ -79,7 +90,7 @@ public class Cangjie2356ListViewItem extends Cangjie2356ListView {
         labelEncode.setBounds(encX, encY, encWidth, encHeight);
         add(labelEncode);
     }
-    
+
     public Item getItemData() {
         return item;
     }
