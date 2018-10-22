@@ -87,7 +87,7 @@ public class CangjieDict2356TabDictPanel extends JPanel {
         searchLabel.setBounds(labelX, labelY, labelWidth, compHeight);
         add(searchLabel);
 
-        searchField = new JTextField(null, 14);
+        searchField = new JTextField(null, 20);
         Font font20 = new Font(null, Font.BOLD, 18);
         searchField.setFont(font20);
         int fieldX = labelX + labelWidth + gap;
