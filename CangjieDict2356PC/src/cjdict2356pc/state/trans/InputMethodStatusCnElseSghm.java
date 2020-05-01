@@ -75,14 +75,19 @@ public class InputMethodStatusCnElseSghm extends InputMethodStatusCnElse {
                                 return 1;
                             } else if (one.getCharacter().length() == two
                                     .getCharacter().length()) {
-                                if (Integer.parseInt(num1) > Integer
-                                        .parseInt(num2)) {
-                                    return 1;
-                                } else if (Integer.parseInt(num1) == Integer
-                                        .parseInt(num2)) {
-                                    return 0; // 使用默認
+                                if (num1.matches("[0-9]+")
+                                        && num2.matches("[0-9]+")) {
+                                    if (Integer.parseInt(num1) > Integer
+                                            .parseInt(num2)) {
+                                        return 1;
+                                    } else if (Integer.parseInt(num1) == Integer
+                                            .parseInt(num2)) {
+                                        return 0; // 使用默認
+                                    } else {
+                                        return -1;
+                                    }
                                 } else {
-                                    return -1;
+                                    return num1.compareTo(num2);
                                 }
                             } else {
                                 return -1;
