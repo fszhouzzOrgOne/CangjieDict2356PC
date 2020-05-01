@@ -261,7 +261,7 @@ public class CangjieDict2356TabDictPanel extends JPanel {
                 String textInput = searchField.getText();
                 if (null != textInput && !"".equals(textInput.trim().replaceAll(" ", ""))) {
                     textInput = textInput.trim().toLowerCase();
-                    String pattern = "[a-zA-Z]{1,}";
+                    String pattern = "[a-zA-Z0-9]{1,}";
                     if (textInput.matches(pattern)) {
                         gData = SettingDictMbUtils.selectDbByCode(textInput);
                     } else {
