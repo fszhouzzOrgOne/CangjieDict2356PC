@@ -14,6 +14,7 @@ import cjdict2356pc.state.trans.InputMethodStatusCnCj3;
 import cjdict2356pc.state.trans.InputMethodStatusCnCj35;
 import cjdict2356pc.state.trans.InputMethodStatusCnCj5;
 import cjdict2356pc.state.trans.InputMethodStatusCnCj6;
+import cjdict2356pc.state.trans.InputMethodStatusCnCjMacOsX105;
 import cjdict2356pc.state.trans.InputMethodStatusCnCjMs;
 import cjdict2356pc.state.trans.InputMethodStatusCnCjYhqm;
 import cjdict2356pc.state.trans.InputMethodStatusCnElseJyutp;
@@ -36,7 +37,7 @@ public class SettingDictMbUtils {
      */
     private static final List<InputMethodStatusCn> dictIms = new ArrayList<InputMethodStatusCn>();
     // 這裡本是讀取配置文件取出的
-    private static final String cjConfig = "cj6,cj5,cj3,cjyhqm,cjms,cj2,sghm";
+    private static final String cjConfig = "cj6,cj5,cjmacx,cj3,cjyhqm,cjms,cj2,sghm";
     
     static {
         init();
@@ -56,6 +57,8 @@ public class SettingDictMbUtils {
                 InputMethodStatus im = new InputMethodStatusCnCj6();
                 allCjIMsMap.put(im.getSubType(), im);
                 im = new InputMethodStatusCnCj5();
+                allCjIMsMap.put(im.getSubType(), im);
+                im = new InputMethodStatusCnCjMacOsX105();
                 allCjIMsMap.put(im.getSubType(), im);
                 im = new InputMethodStatusCnCj35();
                 allCjIMsMap.put(im.getSubType(), im);
