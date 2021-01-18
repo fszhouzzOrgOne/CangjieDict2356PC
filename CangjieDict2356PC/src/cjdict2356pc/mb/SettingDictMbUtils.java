@@ -140,18 +140,32 @@ public class SettingDictMbUtils {
      * @return
      */
     public static List<Group> selectDbByChar(String query) {
+        String[] chas = query.split("");
         List<Group> gData = new ArrayList<Group>();
         for (int i = 0; i < dictIms.size(); i++) {
-            Group g = new Group(i, dictIms.get(i).getSubType(), dictIms.get(i).getInputMethodName());
-            List<Item> items = dictIms.get(i).getCandidatesInfoByChar(query);
-
-            if (null != items && !items.isEmpty()) {
-                for (Item it : items) {
-                    if (StringUtils.hasText(it.getEncode())) {
-                        it.setEncodeName(dictIms.get(i).translateCode2Name(it.getEncode()));
+            Group g = new Group(i, dictIms.get(i).getSubType(),
+                    dictIms.get(i).getInputMethodName());
+            try {
+                List<Item> items = new ArrayList<Item>();
+                // 本分組查詢所有的字符，放入items中
+                InputMethodStatusCn im = dictIms.get(i);
+                for (String cha : chas) {
+                    List<Item> items1 = im.getCandidatesInfoByChar(cha);
+                    if (null != items1 && !items1.isEmpty()) {
+                        for (Item it : items1) {
+                            if (StringUtils.hasText(it.getEncode())) {
+                                it.setEncodeName(im.translateCode2Name(it.getEncode()));
+                            }
+                        }
+                        items.addAll(items1);
                     }
                 }
-                g.setItems(items);
+
+                if (null != items && !items.isEmpty()) {
+                    g.setItems(items);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             gData.add(g);
         }
