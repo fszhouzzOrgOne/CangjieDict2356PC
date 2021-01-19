@@ -142,11 +142,11 @@ public class SettingDictMbUtils {
      * @return
      */
     public static List<Group> selectDbByChar(String query) {
-        // 去重
-        Set<String> queried = new HashSet<String>(); 
         String[] chas = query.split("");
         List<Group> gData = new ArrayList<Group>();
         for (int i = 0; i < dictIms.size(); i++) {
+            // 去重
+            Set<String> queried = new HashSet<String>(); 
             Group g = new Group(i, dictIms.get(i).getSubType(),
                     dictIms.get(i).getInputMethodName());
             try {
