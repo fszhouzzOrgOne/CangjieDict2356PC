@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
+
 import cjdict2356pc.dto.Group;
 import cjdict2356pc.dto.Item;
 import cjdict2356pc.state.InputMethodStatus;
@@ -142,7 +144,13 @@ public class SettingDictMbUtils {
      * @return
      */
     public static List<Group> selectDbByChar(String query) {
-        String[] chas = query.split("");
+        // 權宜之策：擴展區的漢字不能和基本區一起查，所以把query也放在最後了
+        char[] arr = query.toCharArray();
+        String[] chas = new String[arr.length + 1];
+        for (int i = 0; i < arr.length; i++) {
+            chas[i] = "" + arr[i];
+        }
+        chas[chas.length - 1] = query;
         List<Group> gData = new ArrayList<Group>();
         for (int i = 0; i < dictIms.size(); i++) {
             // 去重
