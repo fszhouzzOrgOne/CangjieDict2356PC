@@ -1,9 +1,11 @@
 package cjdict2356pc.mb;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import cjdict2356pc.dto.Group;
 import cjdict2356pc.dto.Item;
@@ -140,6 +142,8 @@ public class SettingDictMbUtils {
      * @return
      */
     public static List<Group> selectDbByChar(String query) {
+        // 去重
+        Set<String> queried = new HashSet<String>(); 
         String[] chas = query.split("");
         List<Group> gData = new ArrayList<Group>();
         for (int i = 0; i < dictIms.size(); i++) {
@@ -150,6 +154,9 @@ public class SettingDictMbUtils {
                 // 本分組查詢所有的字符，放入items中
                 InputMethodStatusCn im = dictIms.get(i);
                 for (String cha : chas) {
+                    if (queried.contains(cha)) {
+                        continue;
+                    }
                     List<Item> items1 = im.getCandidatesInfoByChar(cha);
                     if (null != items1 && !items1.isEmpty()) {
                         for (Item it : items1) {
@@ -159,6 +166,7 @@ public class SettingDictMbUtils {
                         }
                         items.addAll(items1);
                     }
+                    queried.add(cha);
                 }
 
                 if (null != items && !items.isEmpty()) {

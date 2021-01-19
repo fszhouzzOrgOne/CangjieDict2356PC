@@ -50,6 +50,8 @@ public class CangjieDict2356TabDictPanel extends JPanel {
      * 
      */
     private static final long serialVersionUID = 1L;
+    
+    private static final int SEARCH_INPUT_LIMIT = 10;
 
     private JLabel searchLabel = null;
     private JTextField searchField = null;
@@ -102,7 +104,15 @@ public class CangjieDict2356TabDictPanel extends JPanel {
                     }
                 }
             }
+            
+            // 輸入控制了，粘貼沒有控制到
+            @Override
+            public void keyTyped(KeyEvent e) {
+                String s = searchField.getText();
+                if(s.length() >= SEARCH_INPUT_LIMIT) e.consume();
+            }
         });
+//        searchField.setDocument(new SearchFieldDocument(10));
         add(searchField);
 
         searchButton = new JButton("查詢");
@@ -261,6 +271,11 @@ public class CangjieDict2356TabDictPanel extends JPanel {
                 String textInput = searchField.getText();
                 if (null != textInput && !"".equals(textInput.trim().replaceAll(" ", ""))) {
                     textInput = textInput.trim().toLowerCase();
+                    if (textInput.length() > 10) {
+                        JOptionPane.showMessageDialog(null,
+                                "請最多輸入" + SEARCH_INPUT_LIMIT + "個字。");
+                        return;
+                    }
                     String pattern = "[a-zA-Z0-9]{1,}";
                     if (textInput.matches(pattern)) {
                         gData = SettingDictMbUtils.selectDbByCode(textInput);
