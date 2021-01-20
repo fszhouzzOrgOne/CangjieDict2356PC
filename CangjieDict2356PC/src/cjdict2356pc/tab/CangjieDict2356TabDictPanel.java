@@ -109,7 +109,10 @@ public class CangjieDict2356TabDictPanel extends JPanel {
             @Override
             public void keyTyped(KeyEvent e) {
                 String s = searchField.getText();
-                if(s.length() >= SEARCH_INPUT_LIMIT) e.consume();
+                List<Integer> unicodes = UnicodeConvertUtil.getUnicodeListFromStr(s);
+                if(null != unicodes && unicodes.size() >= SEARCH_INPUT_LIMIT) {
+                    e.consume();
+                }
             }
         });
 //        searchField.setDocument(new SearchFieldDocument(10));
@@ -271,7 +274,12 @@ public class CangjieDict2356TabDictPanel extends JPanel {
                 String textInput = searchField.getText();
                 if (null != textInput && !"".equals(textInput.trim().replaceAll(" ", ""))) {
                     textInput = textInput.trim().toLowerCase();
-                    if (textInput.length() > 10) {
+                    List<Integer> unicodes = UnicodeConvertUtil.getUnicodeListFromStr(textInput);
+                    String[] chas = new String[unicodes.size()];
+                    for (int i = 0; i < chas.length; i++) {
+                        chas[i] = UnicodeConvertUtil.getStringByUnicode(unicodes.get(i));
+                    }
+                    if (chas.length > SEARCH_INPUT_LIMIT) {
                         JOptionPane.showMessageDialog(null,
                                 "請最多輸入" + SEARCH_INPUT_LIMIT + "個字。");
                         return;
@@ -280,7 +288,7 @@ public class CangjieDict2356TabDictPanel extends JPanel {
                     if (textInput.matches(pattern)) {
                         gData = SettingDictMbUtils.selectDbByCode(textInput);
                     } else {
-                        gData = SettingDictMbUtils.selectDbByChar(textInput);
+                        gData = SettingDictMbUtils.selectDbByChar(chas);
                     }
                 } else {
                     searchField.setText("");
