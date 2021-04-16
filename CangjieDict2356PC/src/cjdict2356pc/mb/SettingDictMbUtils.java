@@ -81,9 +81,12 @@ public class SettingDictMbUtils {
                 im = new InputMethodStatusCnElseKorea();
                 allCjIMsMap.put(im.getSubType(), im);
 
-                for (String key : allCjIMsMap.keySet()) {
-                    if (cjConfigList.contains(key)) {
-                        dictIms.add((InputMethodStatusCn) allCjIMsMap.get(key));
+                // for (String key : allCjIMsMap.keySet()) {
+                if (null != cjConfigList && !cjConfigList.isEmpty()) {
+                    for (String cfg : cjConfigList) {
+                        if (null != allCjIMsMap.get(cfg)) {
+                            dictIms.add((InputMethodStatusCn) allCjIMsMap.get(cfg));
+                        }
                     }
                 }
             } catch (Exception e) {
